@@ -9,7 +9,11 @@ const port = 5000;
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://startupforge-client-eta.vercel.app',
+  ],
   credentials: true,
 }));
 app.use(express.json());
@@ -666,6 +670,13 @@ app.get('/', (req, res) => {
   `);
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+initMongo()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Mongo initialization failed:', err);
+    process.exit(1);
+  });
